@@ -80,6 +80,37 @@ setwd("/Users/Cody_2/Box Sync/Brassica (rjmarkelz@ucdavis.edu)")
 write.table(B3_194_counts, file="B3_194_counts.csv", sep=",", col.names = NA) 
 write.table(B3_40_9_counts, file="B3_40_9_counts.csv", sep=",", col.names = NA) 
 
+# merge dataframes to do joint analysis on all internode data
+dim(B3_194_counts)
+dim(B3_40_9_counts)
+
+
+B3_194_40_9 <- merge(B3_194_counts, B3_40_9_counts, by = "row.names", all = T)
+dim(B3_194_40_9)
+head(B3_194_40_9)
+tail(B3_194_40_9)
+
+B3_194_40_9[is.na(B3_194_40_9)] <- 0
+head(B3_194_40_9)
+tail(B3_194_40_9)
+
+rownames(B3_194_40_9) <- B3_194_40_9[,1]
+# remove row name column
+B3_194_40_9 <- B3_194_40_9[,-1]
+head(B3_194_40_9)[,1:10]
+dim(B3_194_40_9)
+
+# next
+# block by experiment
+# do joint fit with all data
+# group model
+# ebayes
+
+
+
+
+
+
 
 
 
