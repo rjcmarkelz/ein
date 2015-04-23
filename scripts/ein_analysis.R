@@ -100,11 +100,16 @@ B3_194_40_9 <- B3_194_40_9[,-1]
 head(B3_194_40_9)[,1:10]
 dim(B3_194_40_9)
 
-# next
+
+setwd("/Users/Cody_2/Box Sync/Brassica (rjmarkelz@ucdavis.edu)")
+save.image("brassica_ein.RData")
+
+# NEXT #######
 # block by experiment
 # do joint fit with all data
 # group model
 # ebayes
+
 
 
 
