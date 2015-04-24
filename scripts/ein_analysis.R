@@ -101,17 +101,69 @@ head(B3_194_40_9)[,1:10]
 dim(B3_194_40_9)
 
 
-setwd("/Users/Cody_2/Box Sync/Brassica (rjmarkelz@ucdavis.edu)")
+setwd("/Users/Cody_2/Box Sync/brassica")
 save.image("brassica_ein.RData")
 
-# NEXT #######
-# block by experiment
-# do joint fit with all data
-# group model
-# ebayes
+
+# load libs
+library(edgeR)
+library(limma)
+
+dim(B3_40_9_counts)
+head(B3_40_9_counts)
+Br_group <- factor(sub("(.+)(_)(.+)(_)(S.+)(_)(\\d)",
+                       "\\1\\2\\3\\4\\5", colnames(B3_40_9_counts)))
+head(Br_group)
+Br_group
+Br_trt <- factor(sub("(.+)(_)(.+)(_)(S.+)(_)(\\d)",
+                       "\\5", colnames(B3_40_9_counts)))
+Br_geno <- factor(sub("(.+)(_)(.+)(_)(S.+)(_)(\\d)",
+                       "\\1", colnames(B3_40_9_counts)))
+Br_tissue <- factor(sub("(.+)(_)(.+)(_)(S.+)(_)(\\d)",
+                       "\\3", colnames(B3_40_9_counts)))
 
 
+group_design <- model.matrix(~ 0 + Br_group)
 
+
+Br_trt <- relevel(Br_trt, ref = "Sun")
+Br_trt
+
+Br_geno <- relevel(Br_geno, ref = "B3")
+Br_geno
+
+Br_tissue
+Br_tissue <- relevel(Br_tissue, ref = "Leaf")
+
+ref_design <- model.matrix(~ Br_geno*Br_trt*Br_tissue)
+
+brassica_DE <- DGEList(counts = B3_40_9_counts, group = Br_group)
+brassica_DE$samples
+dim(brassica_DE)
+# [1] 41611    57
+
+# keep genes with at least 1 count per million in at least 20 samples
+brassica_DE <- brassica_DE[rowSums(cpm(brassica_DE) > 1 ) >= 20,]
+dim(brassica_DE)
+# [1] 25351    57
+
+brassica_DE <- calcNormFactors(brassica_DE)
+
+# output plots, they are much to large to fit into memory
+setwd("/Users/Cody_2/Box Sync/brassica_ein")
+png(file="Brassica_MDS.png",width=1000,height=1000,res=100)
+plotMDS(brassica_DE)
+dev.off()
+
+system.time(brass_voom <- voom(brassica_DE, group_design, plot = TRUE))
+head(brass_voom)
+
+
+system.time(fit1 <-lmFit(brass_voom, ref_design))
+
+fit1 <- eBayes(fit1)
+toptable(fit1)
+head(fit1)
 
 
 
